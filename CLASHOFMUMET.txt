@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clash of Mubeng by Fikri Tampan</title>
+    <!-- Google Fonts: Inter & Outfit untuk tampilan akademik premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. VARIABLE & RESET CSS
+           ========================================================================== */
+        :root {
+            --bg-primary: #001233;
+            --bg-secondary: #001845;
+            --bg-card: rgba(0, 32, 96, 0.55);
+            --border-card: rgba(255, 215, 0, 0.25);
+            --gold-primary: #FFD700;
+            --gold-hover: #FFC400;
+            --gold-glow: rgba(255, 215, 0, 0.4);
+            --text-main: #FFFFFF;
+            --text-muted: #94A3B8;
+            --color-correct: #10B981;
+            --color-correct-glow: rgba(16, 185, 129, 0.4);
+            --color-wrong: #EF4444;
+            --color-wrong-glow: rgba(239, 68, 68, 0.4);
+            --font-main: 'Inter', sans-serif;
+            --font-title: 'Outfit', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #002878 0%, var(--bg-primary) 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Latar Belakang Grid Akademik Futuristik */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ==========================================================================
+           2. GLASSMORPHISM CONTAINER & LAYOUT
+           ========================================================================== */
+        .app-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-card);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px var(--gold-glow);
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==========================================================================
+           3. TYPOGRAPHY & BUTTONS
+           ========================================================================== */
+        .main-title {
+            font-family: var(--font-title);
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-align: center;
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--gold-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+            letter-spacing: -1px;
+            margin-bottom: 4px;
+        }
+
+        .sub-title {
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--gold-primary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, #D4AF37 100%);
+            color: #001026;
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-top: 25px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #FFE033 0%, var(--gold-hover) 100%);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* ==========================================================================
+           4. HALAMAN KONFIGURASI
+           ========================================================================== */
+        .config-section {
+            margin-bottom: 24px;
+        }
+
+        .section-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .option-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .chip-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            color: var(--text-main);
+        }
+
+        .chip-option:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: var(--gold-primary);
+        }
+
+        .chip-option.selected {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        /* ==========================================================================
+           5. HALAMAN ARENA KUIS
+           ========================================================================== */
+        .arena-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 16, 38, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hud-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .hud-value {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--gold-primary);
+        }
+
+        /* Progress Bar Timer */
+        .timer-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            display: none; /* Muncul jika mode balapan */
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--gold-primary), #FF5500);
+            border-radius: 4px;
+            transition: width 0.1s linear;
+        }
+
+        .question-card {
+            background: rgba(0, 16, 38, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.6;
+            color: #F1F5F9;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .answer-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 16px 20px;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .answer-btn:hover:not(.disabled) {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: var(--gold-primary);
+            transform: translateX(4px);
+        }
+
+        .answer-btn .choice-prefix {
+            font-family: var(--font-title);
+            font-weight: 800;
+            color: var(--gold-primary);
+            margin-right: 12px;
+            width: 24px;
+            flex-shrink: 0;
+        }
+
+        /* Status Jawaban */
+        .answer-btn.btn-correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: var(--color-correct) !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 0 15px var(--color-correct-glow);
+        }
+
+        .answer-btn.btn-wrong {
+            background: rgba(239, 68, 68, 0.25) !important;
+            border-color: var(--color-wrong) !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 0 15px var(--color-wrong-glow);
+        }
+
+        .answer-btn.disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        /* ==========================================================================
+           6. HALAMAN SKOR AKHIR & REKAPITULASI
+           ========================================================================== */
+        .score-display-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(0, 16, 38, 0.5);
+            border-radius: 20px;
+            border: 1px solid var(--border-card);
+            margin-bottom: 25px;
+        }
+
+        .final-score-number {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: var(--gold-primary);
+            text-shadow: 0 0 30px var(--gold-glow);
+            line-height: 1;
+            margin: 10px 0;
+        }
+
+        .eval-title {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        .eval-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Tabel Rekapitulasi */
+        .recap-container {
+            max-height: 260px;
+            overflow-y: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .recap-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .recap-table th {
+            background: rgba(0, 16, 38, 0.8);
+            color: var(--gold-primary);
+            font-family: var(--font-title);
+            font-weight: 700;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .recap-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .recap-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge-status {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .badge-correct {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-correct);
+        }
+
+        .badge-wrong {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--color-wrong);
+        }
+
+        /* Custom Scrollbar */
+        .recap-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .recap-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .recap-container::-webkit-scrollbar-thumb {
+            background: var(--border-card);
+            border-radius: 3px;
+        }
+
+        /* ==========================================================================
+           7. MEDIA QUERIES (RESPONSIF)
+           ========================================================================== */
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 24px 16px;
+                border-radius: 18px;
+            }
+
+            .main-title {
+                font-size: 2.1rem;
+            }
+
+            .sub-title {
+                font-size: 0.95rem;
+                letter-spacing: 2px;
+            }
+
+            .option-group {
+                grid-template-columns: 1fr;
+            }
+
+            .arena-header {
+                padding: 12px;
+            }
+
+            .hud-value {
+                font-size: 1.1rem;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+
+            .final-score-number {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- ====================================================================
+             HALAMAN 1: UTAMA
+             ==================================================================== -->
+        <div id="page-home" class="page active">
+            <h1 class="main-title">Clash of Mubeng</h1>
+            <div class="sub-title">by Fikri Tampan</div>
+            <p style="text-align: center; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px;">
+                Selamat datang di Arena Kompetisi Akademik Biologi. Uji pemahaman materi Klasifikasi Makhluk Hidup kamu dalam simulasi kuis berstandar tinggi.
+            </p>
+            <button class="btn-primary" onclick="navigateTo('page-config')">Mulai Kompetisi</button>
+        </div>
+
+        <!-- ====================================================================
+             HALAMAN 2: KONFIGURASI GAME
+             ==================================================================== -->
+        <div id="page-config" class="page">
+            <h2 style="font-family: var(--font-title); font-size: 1.8rem; margin-bottom: 20px; color: var(--gold-primary);">
+                Konfigurasi Pertandingan
+            </h2>
+
+            <!-- A. Kesulitan -->
+            <div class="config-section">
+                <span class="section-label">A. Pilih Tingkat Kesulitan</span>
+                <div class="option-group">
+                    <div class="chip-option selected" data-group="difficulty" data-value="mudah" onclick="selectChip(this)">Mudah</div>
+                    <div class="chip-option" data-group="difficulty" data-value="sedang" onclick="selectChip(this)">Sedang</div>
+                    <div class="chip-option" data-group="difficulty" data-value="sulit" onclick="selectChip(this)">Sulit</div>
+                </div>
+            </div>
+
+            <!-- B. Mode -->
+            <div class="config-section">
+                <span class="section-label">B. Pilih Mode Permainan</span>
+                <div class="option-group">
+                    <div class="chip-option selected" data-group="mode" data-value="balapan" onclick="selectMode(this, 'balapan')">Balapan</div>
+                    <div class="chip-option" data-group="mode" data-value="bebas" onclick="selectMode(this, 'bebas')">Bebas</div>
+                </div>
+            </div>
+
+            <!-- C. Kecepatan Waktu (Jika Mode Balapan) -->
+            <div class="config-section" id="speed-section">
+                <span class="section-label">C. Pilih Kecepatan Waktu</span>
+                <div class="option-group">
+                    <div class="chip-option" data-group="speed" data-value="30" onclick="selectChip(this)">Siput</div>
+                    <div class="chip-option selected" data-group="speed" data-value="20" onclick="selectChip(this)">Sapi</div>
+                    <div class="chip-option" data-group="speed" data-value="15" onclick="selectChip(this)">Cheetah</div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="initQuizArena()">Masuk Arena</button>
+        </div>
+
+        <!-- ====================================================================
+             HALAMAN 3: ARENA KUIS
+             ==================================================================== -->
+        <div id="page-arena" class="page">
+            <!-- HUD Stats -->
+            <div class="arena-header">
+                <div class="hud-item">
+                    <span class="hud-label">Soal</span>
+                    <span class="hud-value" id="hud-question-number">1/20</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Skor</span>
+                    <span class="hud-value" id="hud-score">0</span>
+                </div>
+                <div class="hud-item" id="hud-timer-box">
+                    <span class="hud-label">Waktu</span>
+                    <span class="hud-value" id="hud-timer">--s</span>
+                </div>
+            </div>
+
+            <!-- Timer Bar -->
+            <div class="timer-container" id="timer-container">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+
+            <!-- Kartu Soal -->
+            <div class="question-card">
+                <div class="question-text" id="question-text">Memuat pertanyaan...</div>
+            </div>
+
+            <!-- Opsi Jawaban -->
+            <div class="answers-grid" id="answers-grid"></div>
+        </div>
+
+        <!-- ====================================================================
+             HALAMAN 4: SKOR AKHIR & EVALUASI
+             ==================================================================== -->
+        <div id="page-result" class="page">
+            <div class="score-display-card">
+                <span style="font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 2px;">
+                    Skor Akhir Kamu
+                </span>
+                <div class="final-score-number" id="final-score-text">0</div>
+                <div class="eval-title" id="eval-title">Evaluasi Pertandingan</div>
+                <div class="eval-desc" id="eval-desc">Uraian evaluasi akan tampil di sini.</div>
+            </div>
+
+            <span class="section-label">Tabel Rekapitulasi Performa</span>
+            <div class="recap-container">
+                <table class="recap-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">No</th>
+                            <th style="width: 65%;">Pertanyaan</th>
+                            <th style="width: 25%;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recap-tbody">
+                        <!-- Rekapitulasi diisi dinamis via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn-primary" onclick="navigateTo('page-home')">Main Lagi</button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       JAVASCRIPT LOGIC & DATABASE
+       ========================================================================== -->
+    <script>
+        /* ==========================================================================
+           BAGIAN 1: DATABASE 60 SOAL BIOLOGI - KLASIFIKASI MAKHLUK HIDUP
+           ========================================================================== */
+        const quizDatabase = {
+            mudah: [
+                { id: "M01", teks: "Bapak Taksonomi Modern yang menginisiasi sistem Binomial Nomenklatur adalah...", pilihan: ["Carolus Linnaeus", "Charles Darwin", "Gregor Mendel", "Robert Whittaker"], jawabanBenar: "A" },
+                { id: "M02", teks: "Tingkatan takson tertinggi dalam klasifikasi makhluk hidup secara umum adalah...", pilihan: ["Genus", "Ordo", "Kingdom", "Spesies"], jawabanBenar: "C" },
+                { id: "M03", teks: "Sistem tata nama ganda penulisan makhluk hidup dinamakan...", pilihan: ["Kladogram", "Binomial Nomenklatur", "Kunci Determinasi", "Dikotom"], jawabanBenar: "B" },
+                { id: "M04", teks: "Penulisan nama ilmiah yang tepat jika diketik pada komputer harus dicetak...", pilihan: ["Tebal", "Miring", "Garis Bawah", "Kapital Semua"], jawabanBenar: "B" },
+                { id: "M05", teks: "Kata pertama pada penulisan nama ilmiah spesifik menunjukkan tingkat takson...", pilihan: ["Spesies", "Ordo", "Famili", "Genus"], jawabanBenar: "D" },
+                { id: "M06", teks: "Tingkatan takson terkecil yang anggotanya memiliki paling banyak persamaan ciri adalah...", pilihan: ["Spesies", "Genus", "Kelas", "Filum"], jawabanBenar: "A" },
+                { id: "M07", teks: "Kelompok makhluk hidup bersel tunggal tanpa membran inti sel (prokariotik) dimasukkan dalam kingdom...", pilihan: ["Fungi", "Plantae", "Monera", "Protista"], jawabanBenar: "C" },
+                { id: "M08", teks: "Ilmu yang mempelajari tentang pengelompokan dan penamaan makhluk hidup disebut...", pilihan: ["Ekologi", "Taksonomi", "Anatomi", "Genetika"], jawabanBenar: "B" },
+                { id: "M09", teks: "Urutan takson untuk tumbuhan dari tingkat tinggi ke rendah setelah Kingdom adalah...", pilihan: ["Phylum", "Divisio", "Classis", "Ordo"], jawabanBenar: "B" },
+                { id: "M10", teks: "Bahasa baku yang disepakati secara internasional dalam penulisan nama ilmiah adalah...", pilihan: ["Bahasa Inggris", "Bahasa Yunani", "Bahasa Latin", "Bahasa Prancis"], jawabanBenar: "C" },
+                { id: "M11", teks: "Jamur/Fungi dikelompokkan dalam kingdom tersendiri karena tidak memiliki...", pilihan: ["Dinding Sel", "Membran Sel", "Klorofil", "Mitoskondria"], jawabanBenar: "C" },
+                { id: "M12", teks: "Pada nama ilmiah Zea mays, kata 'mays' menunjuk pada penunjuk...", pilihan: ["Genus", "Spesies", "Famili", "Ordo"], jawabanBenar: "B" },
+                { id: "M13", teks: "Tumbuhan yang bijinya tertutup oleh daun buah tergolong dalam kelompok...", pilihan: ["Gymnospermae", "Angiospermae", "Bryophyta", "Pteridophyta"], jawabanBenar: "B" },
+                { id: "M14", teks: "Hewan bertulang belakang disebut juga dengan istilah...", pilihan: ["Invertebrata", "Vertebrata", "Echinodermata", "Arthropoda"], jawabanBenar: "B" },
+                { id: "M15", teks: "Kunci dikotomis merupakan alat yang digunakan untuk...", pilihan: ["Mengukur jumlah populasi", "Mengidentifikasi kelompok organisme", "Menghitung umur fosil", "Membuat DNA rekombinan"], jawabanBenar: "B" },
+                { id: "M16", teks: "Penulisan nama ilmiah ditulis tangan yang benar adalah dengan memberikan garis bawah secara...", pilihan: ["Bersambung seluruhnya", "Terpisah antar kata", "Hanya pada kata pertama", "Hanya pada kata kedua"], jawabanBenar: "B" },
+                { id: "M17", teks: "Organisme fotosintetik multiseluler yang memiliki dinding sel selulosa tergolong dalam kingdom...", pilihan: ["Animalia", "Protista", "Plantae", "Fungi"], jawabanBenar: "C" },
+                { id: "M18", teks: "Huruf pertama pada kata pertama penulisan nama ilmiah harus ditulis dengan huruf...", pilihan: ["Kecil", "Kapital", "Miring", "Tebal"], jawabanBenar: "B" },
+                { id: "M19", teks: "Pengelompokan makhluk hidup berdasarkan persamaan dan perbedaan ciri dinamakan...", pilihan: ["Klasifikasi", "Kloning", "Mutasi", "Adaptasi"], jawabanBenar: "A" },
+                { id: "M20", teks: "Sistem klasifikasi 5 Kingdom diusulkan oleh ilmuwan bernama...", pilihan: ["Carl Woese", "Robert H. Whittaker", "Ernst Haeckel", "Aristoteles"], jawabanBenar: "B" }
+            ],
+            sedang: [
+                { id: "S01", teks: "Dua organisme berada dalam satu spesies jika dikawinkan dapat menghasilkan keturunan yang...", pilihan: ["Steril", "Fertil", "Unggul", "Bervariasi"], jawabanBenar: "B" },
+                { id: "S02", teks: "Solanum tuberosum (kentang) dan Solanum melongena (terong) berada dalam takson yang sama pada tingkat...", pilihan: ["Spesies", "Genus", "Varietas", "Subspesies"], jawabanBenar: "B" },
+                { id: "S03", teks: "Pengelompokan tumbuhan obat, tanaman hias, dan tanaman pangan merupakan contoh sistem klasifikasi...", pilihan: ["Alami", "Buatan (Artifisial)", "Filogenetik", "Kladistik"], jawabanBenar: "B" },
+                { id: "S04", teks: "Sistem klasifikasi filogenetik disusun berdasarkan sejarah...", pilihan: ["Ekologi organisme", "Evolusi dan kekerabatan", "Morfologi luar belaka", "Manfaat bagi manusia"], jawabanBenar: "B" },
+                { id: "S05", teks: "Tanaman Oryza sativa var. indica menunjukkan penulisan takson tingkat...", pilihan: ["Kultivar", "Varietas Botani", "Sub-genus", "Ordo"], jawabanBenar: "B" },
+                { id: "S06", teks: "Singkatan 'var.' pada penulisan varietas botani ditulis secara...", pilihan: ["Cetak miring", "Cetak tegak", "Garis bawah", "Huruf kapital"], jawabanBenar: "B" },
+                { id: "S07", teks: "Format penulisan kultivar pertanian yang benar menurut aturan taksonomi adalah...", pilihan: ["Oryza sativa 'Ciherang'", "Oryza sativa var Ciherang", "Oryza Sativa Ciherang", "Oryza sativa ciherang"], jawabanBenar: "A" },
+                { id: "S08", teks: "Bakteri Archaebacteria berbeda dari Eubacteria terutama pada struktur...", pilihan: ["Membran sel dan peptidoglikan", "Klorofil", "Membran inti sel", "Bentuk sel"], jawabanBenar: "A" },
+                { id: "S09", teks: "Sistem 6 Kingdom dikembangkan oleh Carl Woese dengan membagi Monera menjadi...", pilihan: ["Protista dan Fungi", "Archaebacteria dan Eubacteria", "Bakteri dan Virus", "Alga dan Protozoa"], jawabanBenar: "B" },
+                { id: "S10", teks: "Semakin tinggi tingkatan takson suatu makhluk hidup, maka persamaannya akan...", pilihan: ["Semakin banyak", "Semakin sedikit", "Sama persis", "Tidak terpengaruh"], jawabanBenar: "B" },
+                { id: "S11", teks: "Tumbuhan paku (Pteridophyta) dan tumbuhan lumut (Bryophyta) dikelompokkan berdasar perbedaan sistem...", pilihan: ["Jaringan pembuluh", "Warna spora", "Kemampuan fotosintesis", "Dinding sel"], jawabanBenar: "A" },
+                { id: "S12", teks: "Protista mirip jamur dikeluarkan dari kingdom Fungi karena memiliki struktur dinding sel berupa...", pilihan: ["Kitin", "Peptidoglikan", "Selulosa", "Lignin"], jawabanBenar: "C" },
+                { id: "S13", teks: "Nama ilmiah Felidae merujuk pada tingkatan takson suku/famili pada hewan yang diakhiri kata...", pilihan: ["-ales", " -idae", " -aceae", " -inae"], jawabanBenar: "B" },
+                { id: "S14", teks: "Nama famili tumbuhan biasanya ditandai dengan akhiran kata...", pilihan: ["-idae", "-aceae", "-ales", "-phyta"], jawabanBenar: "B" },
+                { id: "S15", teks: "Lichenes (lumut kerak) merupakan bentuk simbiosis mutualisme antara...", pilihan: ["Jamur dan Alga", "Bakteri dan Lumut", "Jamur dan Akar Tumbuhan", "Alga dan Protozoa"], jawabanBenar: "A" },
+                { id: "S16", teks: "Penulisan singkatan 'sp.' di belakang nama genus (contoh: Rosa sp.) menunjukkan...", pilihan: ["Spesies sudah teridentifikasi jelas", "Spesies belum diketahui secara spesifik", "Spesies hibrida buatan", "Tingkat sub-spesies"], jawabanBenar: "B" },
+                { id: "S17", teks: "Organisme eukariotik bersel tunggal yang mampu bergerak aktif dikelompokkan dalam...", pilihan: ["Protozoa (Protista mirip hewan)", "Alga", "Eubacteria", "Fungi"], jawabanBenar: "A" },
+                { id: "S18", teks: "Klasifikasi yang didasarkan pada ciri morfologi bentuk tubuh alami luar disebut sistem...", pilihan: ["Filogenetik", "Alami", "Buatan", "Biokimia"], jawabanBenar: "B" },
+                { id: "S19", teks: "Hewan Arthropoda dikelompokkan berdasarkan ciri khas berupa...", pilihan: ["Kaki beruas-ruas dan eksoskeleton kitin", "Tubuh lunak berlapis cangkang", "Punya tulang belakang", "Napas dengan paru-paru buku saja"], jawabanBenar: "A" },
+                { id: "S20", teks: "Metode dikotomis dalam membuat kunci determinasi menggunakan pilihan pernyataan yang...", pilihan: ["Saling mendukung", "Saling berlawanan", "Acak", "Sama persis"], jawabanBenar: "B" }
+            ],
+            sulit: [
+                { id: "H01", teks: "Perbedaan mendasar antara klasifikasi filogenetik klasik dan klasifikasi modern molekuler terletak pada pengujian...", pilihan: ["Morfologi anatomi luar", "Sekuens asam nukleat (DNA/RNA) & biokimia", "Habitat dan relung ekologi", "Metolisme respirasi sel"], jawabanBenar: "B" },
+                { id: "H02", teks: "Kepiting ladam (Limulus polyphemus) dahulu dikelompokkan dalam Crustacea, namun secara molekuler modern lebih dekat dengan...", pilihan: ["Arachnida (Laba-laba)", "Insecta", "Myriapoda", "Mollusca"], jawabanBenar: "A" },
+                { id: "H03", teks: "Suatu diagram percabangan yang menunjukkan hubungan evolusi berdasarkan karakter turunan bersama (synapomorphy) dinamakan...", pilihan: ["Dendrogram Alami", "Kladogram", "Kunci Determinasi", "Fenogram"], jawabanBenar: "B" },
+                { id: "H04", teks: "Analisis filogenetik molekuler modern sering menggunakan sekuens gen r RNA 16S karena sifatnya yang...", pilihan: ["Labil dan cepat berevolusi", "Konservatif secara evolusioner", "Tidak dimiliki oleh prokariotik", "Mudah mengalami mutasi liar"], jawabanBenar: "B" },
+                { id: "H05", teks: "Kelompok monofiletik pada taksonomi didefinisikan sebagai kelompok yang mencakup...", pilihan: ["Satu nenek moyang bersama beserta seluruh keturunannya", "Satu nenek moyang tanpa melibatkan keturunannya", "Beberapa keturunan dari nenek moyang yang berbeda", "Organisme dengan kemiripan konvergen saja"], jawabanBenar: "A" },
+                { id: "H06", teks: "Persamaan ciri antara hiu (Ikan) dan lumba-lumba (Mamalia) akibat adaptasi lingkungan air disebut evolusi...", pilihan: ["Divergen", "Konvergen", "Paralel", "Mikroevolusi"], jawabanBenar: "B" },
+                { id: "H07", teks: "Kelompok parafiletik merupakan kelompok takson yang mencakup...", pilihan: ["Nenek moyang dan seluruh keturunannya", "Nenek moyang tetapi tidak mencakup semua keturunannya", "Organisme tanpa nenek moyang bersama", "Hanya organisme hibrida"], jawabanBenar: "B" },
+                { id: "H08", teks: "Penulisan nama ilmiah Musa paradisiaca L. var. sapientum Kuntze menunjukkan bahwa 'Kuntze' berperan sebagai...", pilihan: ["Penemu varietas", "Penemu genus utama", "Kultivar pemulia", "Ordo penjelas"], jawabanBenar: "A" },
+                { id: "H09", teks: "Pada sistem 3 Domain oleh Carl Woese, kehidupan dibagi menjadi...", pilihan: ["Archaea, Bacteria, Eukarya", "Monera, Protista, Eukarya", "Prokariot, Eukariot, Virus", "Plantae, Animalia, Fungi"], jawabanBenar: "A" },
+                { id: "H10", teks: "Karakter analog dalam taksonomi ditunjukkan oleh pasangan organ...", pilihan: ["Sayap burung dan sayap serangga", "Sayap burung dan sirip paus", "Tangan manusia dan kaki depan kucing", "Sayap kelelawar dan tangan manusia"], jawabanBenar: "A" },
+                { id: "H11", teks: "Karakter homolog menunjukkan adanya bukti evolusi...", pilihan: ["Konvergen", "Divergen", "Regresif", "Simpatrik"], jawabanBenar: "B" },
+                { id: "H12", teks: "Pernyataan yang tepat mengenai kriteria taksonomi fenetik (numerik) adalah berdasarkan...", pilihan: ["Kesamaan sifat fisik secara keseluruhan tanpa melihat evolusi", "Sekuens genomik khusus evolusi", "Uji serologi imunologi saja", "Berdasarkan fosil tertua"], jawabanBenar: "A" },
+                { id: "H13", teks: "Manakah penulisan nama ilmiah yang TEPAT untuk hasil persilangan hibrida antar spesies?", pilihan: ["Mentha × piperita", "Mentha piperita X", "Mentha Hibrida piperita", "X Mentha Piperita"], jawabanBenar: "A" },
+                { id: "H14", teks: "Pemberian nama spesies tumbuhan diatur secara ketat oleh Kode Internasional yang dikenal sebagai...", pilihan: ["ICZN", "ICN (dulu ICBN)", "ICTV", "ICNP"], jawabanBenar: "B" },
+                { id: "H15", teks: "Kunci matriks (sinoptik) berbeda dari kunci dikotomis karena memungkinkan pengguna untuk...", pilihan: ["Memulai identifikasi dari karakter mana saja", "Hanya memilih dua opsi kaku", "Mengabaikan sifat genetik", "Menggunakan kode DNA saja"], jawabanBenar: "A" },
+                { id: "H16", teks: "Amoebois, Flagellata, Ciliata, dan Sporozoa dikelompokkan dalam Protozoa berdasarkan...", pilihan: ["Alat gerak", "Pigmen warna", "Cara reproduksi seksual", "Dinding sel"], jawabanBenar: "A" },
+                { id: "H17", teks: "Spora aseksual pada Divisio Ascomycota dihasilkan di luar sel pembentuknya yang dinamakan...", pilihan: ["Konidia", "Askospora", "Basidiospora", "Zoospora"], jawabanBenar: "A" },
+                { id: "H18", teks: "Virus tidak dimasukkan ke dalam sistem klasifikasi 5 maupun 6 Kingdom karena bersifat...", pilihan: ["Prokariotik sederhana", "Aseluler dan parasit obligat", "Eukariotik tingkat rendah", "Uniseluler autotrof"], jawabanBenar: "B" },
+                { id: "H19", teks: "Pernyataan yang BENAR mengenai sistem klasifikasi APG (Angiosperm Phylogeny Group) adalah berbasis...", pilihan: ["Morfologi bunga belaka", "Urutan DNA kloroplas (rbcL & matK)", "Anatomi batang kayu", "Jenis habitat hidup"], jawabanBenar: "B" },
+                { id: "H20", teks: "Autapomorfi dalam analisis kladistik berarti...", pilihan: ["Ciri unik yang hanya dimiliki oleh satu takson tunggal", "Ciri leluhur yang dimiliki bersama", "Ciri hasil evolusi konvergen", "Ciri yang hilang selama evolusi"], jawabanBenar: "A" }
+            ]
+        };
+
+        /* ==========================================================================
+           BAGIAN 2: STATE MANAGEMENT & VARIABLES
+           ========================================================================== */
+        let gameState = {
+            difficulty: "mudah",
+            mode: "balapan",
+            speed: 20, // detik
+            currentQuestions: [],
+            currentIndex: 0,
+            score: 0,
+            timerInterval: null,
+            timeLeft: 0,
+            recap: [],
+            isAnsweringBlocked: false
+        };
+
+        /* ==========================================================================
+           BAGIAN 3: AUDIO SYNTHESIZER (WEB AUDIO API)
+           ========================================================================== */
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                // Beep Frekuensi Tinggi (Sukses)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'wrong') {
+                // Buzz Frekuensi Rendah (Gagal)
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.25);
+            }
+        }
+
+        /* ==========================================================================
+           BAGIAN 4: NAVIGASI STATE / HALAMAN
+           ========================================================================== */
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        /* ==========================================================================
+           BAGIAN 5: KONFIGURASI SELECTION LOGIC
+           ========================================================================== */
+        function selectChip(element) {
+            const group = element.getAttribute('data-group');
+            document.querySelectorAll(`.chip-option[data-group="${group}"]`).forEach(chip => {
+                chip.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            // Save to state
+            const val = element.getAttribute('data-value');
+            if (group === 'difficulty') gameState.difficulty = val;
+            if (group === 'speed') gameState.speed = parseInt(val);
+        }
+
+        function selectMode(element, modeValue) {
+            selectChip(element);
+            gameState.mode = modeValue;
+
+            const speedSection = document.getElementById('speed-section');
+            if (modeValue === 'balapan') {
+                speedSection.style.display = 'block';
+            } else {
+                speedSection.style.display = 'none';
+            }
+        }
+
+        /* ==========================================================================
+           BAGIAN 6: UTILITY (SHUFFLE)
+           ========================================================================== */
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        /* ==========================================================================
+           BAGIAN 7: ARENA GAMEPLAY LOGIC
+           ========================================================================== */
+        function initQuizArena() {
+            // Get database based on difficulty
+            const rawQuestions = quizDatabase[gameState.difficulty];
+            gameState.currentQuestions = shuffleArray(rawQuestions);
+            gameState.currentIndex = 0;
+            gameState.score = 0;
+            gameState.recap = [];
+            gameState.isAnsweringBlocked = false;
+
+            // UI Adjustments
+            const timerContainer = document.getElementById('timer-container');
+            const timerHud = document.getElementById('hud-timer-box');
+            
+            if (gameState.mode === 'balapan') {
+                timerContainer.style.display = 'block';
+                timerHud.style.display = 'flex';
+            } else {
+                timerContainer.style.display = 'none';
+                timerHud.style.display = 'none';
+            }
+
+            navigateTo('page-arena');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(gameState.timerInterval);
+            gameState.isAnsweringBlocked = false;
+
+            const q = gameState.currentQuestions[gameState.currentIndex];
+            
+            // Update HUD
+            document.getElementById('hud-question-number').innerText = `${gameState.currentIndex + 1}/20`;
+            document.getElementById('hud-score').innerText = gameState.score;
+            document.getElementById('question-text').innerText = q.teks;
+
+            // Render Answers
+            const grid = document.getElementById('answers-grid');
+            grid.innerHTML = '';
+            const prefixes = ['A', 'B', 'C', 'D'];
+
+            q.pilihan.forEach((opt, idx) => {
+                const prefix = prefixes[idx];
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.setAttribute('data-choice', prefix);
+                btn.innerHTML = `<span class="choice-prefix">${prefix}.</span> ${opt}`;
+                btn.onclick = () => handleAnswer(prefix, btn);
+                grid.appendChild(btn);
+            });
+
+            // Start Timer if Balapan
+            if (gameState.mode === 'balapan') {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            gameState.timeLeft = gameState.speed;
+            const timerBar = document.getElementById('timer-bar');
+            const timerHud = document.getElementById('hud-timer');
+            
+            timerBar.style.width = '100%';
+            timerHud.innerText = `${gameState.timeLeft}s`;
+
+            const totalTime = gameState.speed;
+            const intervalTime = 100; // ms
+            let elapsed = 0;
+
+            gameState.timerInterval = setInterval(() => {
+                elapsed += 0.1;
+                gameState.timeLeft = Math.max(0, totalTime - elapsed);
+                
+                // Update UI
+                const percent = (gameState.timeLeft / totalTime) * 100;
+                timerBar.style.width = `${percent}%`;
+                timerHud.innerText = `${Math.ceil(gameState.timeLeft)}s`;
+
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    handleTimeOut();
+                }
+            }, intervalTime);
+        }
+
+        function handleAnswer(selectedChoice, clickedBtn) {
+            if (gameState.isAnsweringBlocked) return;
+            gameState.isAnsweringBlocked = true;
+            clearInterval(gameState.timerInterval);
+
+            const q = gameState.currentQuestions[gameState.currentIndex];
+            const isCorrect = (selectedChoice === q.jawabanBenar);
+            const allBtns = document.querySelectorAll('.answer-btn');
+
+            allBtns.forEach(btn => btn.classList.add('disabled'));
+
+            if (isCorrect) {
+                clickedBtn.classList.add('btn-correct');
+                playSound('correct');
+                gameState.score += 5;
+                document.getElementById('hud-score').innerText = gameState.score;
+            } else {
+                clickedBtn.classList.add('btn-wrong');
+                playSound('wrong');
+                // Highlight correct answer
+                allBtns.forEach(btn => {
+                    if (btn.getAttribute('data-choice') === q.jawabanBenar) {
+                        btn.classList.add('btn-correct');
+                    }
+                });
+            }
+
+            // Save Recap
+            gameState.recap.push({
+                no: gameState.currentIndex + 1,
+                soal: q.teks,
+                isCorrect: isCorrect
+            });
+
+            // Delay 1.5s then next
+            setTimeout(nextQuestion, 1500);
+        }
+
+        function handleTimeOut() {
+            if (gameState.isAnsweringBlocked) return;
+            gameState.isAnsweringBlocked = true;
+
+            playSound('wrong');
+            const q = gameState.currentQuestions[gameState.currentIndex];
+            const allBtns = document.querySelectorAll('.answer-btn');
+
+            allBtns.forEach(btn => {
+                btn.classList.add('disabled');
+                if (btn.getAttribute('data-choice') === q.jawabanBenar) {
+                    btn.classList.add('btn-correct');
+                }
+            });
+
+            // Save Recap as Wrong
+            gameState.recap.push({
+                no: gameState.currentIndex + 1,
+                soal: q.teks,
+                isCorrect: false
+            });
+
+            setTimeout(nextQuestion, 1500);
+        }
+
+        function nextQuestion() {
+            gameState.currentIndex++;
+            if (gameState.currentIndex < 20) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        /* ==========================================================================
+           BAGIAN 8: EVALUASI DAN HASIL AKHIR
+           ========================================================================== */
+        function showResults() {
+            navigateTo('page-result');
+
+            const score = gameState.score;
+            document.getElementById('final-score-text').innerText = score;
+
+            const evalTitle = document.getElementById('eval-title');
+            const evalDesc = document.getElementById('eval-desc');
+
+            if (score === 100) {
+                evalTitle.innerText = "Sempurna! Biologist Sejati!";
+                evalDesc.innerText = "Luar biasa! Performa kamu sempurna tanpa cela. Pemahaman taksonomi kamu sudah berada di tingkat Master Akademik sekelas Fikri Tampan!";
+            } else if (score >= 80) {
+                evalTitle.innerText = "Performa Unggul!";
+                evalDesc.innerText = "Sangat bagus! Kamu menguasai sebagian besar konsep klasifikasi makhluk hidup dengan analisis yang tajam dan cepat.";
+            } else if (score >= 60) {
+                evalTitle.innerText = "Cukup Baik!";
+                evalDesc.innerText = "Hasil yang lumayan, namun masih ada beberapa konsep dan aturan taksonomi yang perlu dipoles kembali agar lebih presisi.";
+            } else {
+                evalTitle.innerText = "Perlu Latihan Lagi!";
+                evalDesc.innerText = "Jangan berkecil hati. Pelajari kembali materi dasar klasifikasi, tata nama ilmiah, dan aturan taksonomi lalu coba arena kuis ini kembali!";
+            }
+
+            // Render Recap Table
+            const tbody = document.getElementById('recap-tbody');
+            tbody.innerHTML = '';
+
+            gameState.recap.forEach(item => {
+                const tr = document.createElement('tr');
+                const badge = item.isCorrect 
+                    ? `<span class="badge-status badge-correct">Benar (+5)</span>`
+                    : `<span class="badge-status badge-wrong">Salah (0)</span>`;
+
+                tr.innerHTML = `
+                    <td style="font-weight: 700;">${item.no}</td>
+                    <td>${item.soal}</td>
+                    <td>${badge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
